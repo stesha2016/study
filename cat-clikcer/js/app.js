@@ -1,44 +1,103 @@
 window.onload = function() {
-  var linkContainer = document.getElementById('link-container');
-  var catContainer = document.getElementById('cat-container');
-  var Cat = function(name, src) {
-    this.name = name;
-    this.number = 0;
-    this.src = src;
-    this.init();
-  }
-  Cat.prototype.init = function() {
-    var li = document.createElement('li');
+  const CAT_NUMBER = 5;
+  var buttonView = {
+    init: function() {
+      var buttonContainer = document.getElementById('button-container');
+      var catsList = octupus.getAllCats();
+      for (var i = 0; i < catsList.length; i++) {
+        var button = document.createElement('button');
+        button.id = 'button' + i;
+        button.textContent = catsList[i].catName;
+        button.addEventListener('click', function(i) {
+          return function() {
+            octupus.setCurrentCat(i);
+            octupus.renderAll();
+          }
+        }(i));
+        buttonContainer.appendChild(button);
+      }
+    }
+  };
 
-    var linka = document.createElement('a');
-    linka.textContent = this.name;
-    linka.setAttribute('name', this.name);
-    var divName = document.createElement('div');
-    divName.appendChild(linka);
-    li.appendChild(divName);
+  var catView = {
+    catViewEle: null,
+    clickNumEle: null,
+    catName: null,
+    init: function() {
+      this.clickNumEle = document.getElementById('click-num');
+      this.catName = document.getElementById('cat-name');
+      this.catViewEle = document.getElementById('cat-container');
+      this.catViewEle.addEventListener('click', function() {
+        octupus.addClickNum();
+        octupus.renderClickNum();
+      })
+    },
 
-    var img = document.createElement('img');
-    img.src = this.src;
-    img.addEventListener('click', function() {
-      this.number++;
-      divNum.textContent = 'Click ' + this.number + ' times!';
-    }.bind(this));
-    li.appendChild(img);
+    renderImg: function(catInfo) {
+      this.catViewEle.setAttribute('src', catInfo.catImg);
+      this.catName.textContent = catInfo.catName;
+    },
 
-    var divNum = document.createElement('div');
-    divNum.textContent = 'Click ' + this.number + ' times!';
-    li.appendChild(divNum);
+    renderClickNum: function(catInfo) {
+      this.clickNumEle.textContent = 'Click' + catInfo.catClickNumber;
+    }
+  };
 
-    catContainer.appendChild(li);
+  var octupus = {
+    init: function() {
+      data.init();
+      catView.init();
+      buttonView.init();
+    },
 
-    var p = document.createElement('p');
-    var a = document.createElement('a');
-    a.textContent = this.name;
-    a.setAttribute('href', '#' + this.name);
-    p.appendChild(a);
-    linkContainer.appendChild(p);
-  }
+    renderAll: function() {
+      var catInfo = data.getCurrentCat();
+      catView.renderImg(catInfo);
+      catView.renderClickNum(catInfo);
+    },
 
-  var cat1 = new Cat('first cat', 'img/cat.jpg');
-  var cat2 = new Cat('second cat', 'img/cat.jpg');
+    setCurrentCat: function(index) {
+      data.setCurrentCat(index);
+    },
+
+    renderClickNum: function() {
+      var catInfo = data.getCurrentCat();
+      catView.renderClickNum(catInfo);
+    },
+
+    addClickNum: function() {
+      var catInfo = data.getCurrentCat();
+      catInfo.catClickNumber++;
+    },
+
+    getAllCats: function() {
+      return data.catsList;
+    }
+  };
+
+  var data = {
+    catsList: [],
+    currentCat: 0,
+
+    init: function() {
+      for (var i = 0; i < CAT_NUMBER; i++) {
+        var catInfo = {
+          catName: 'cat' + (i + 1),
+          catImg: 'img/cat' + (i + 1) + '.jpeg',
+          catClickNumber: 0
+        }
+        this.catsList.push(catInfo);
+      }
+    },
+
+    getCurrentCat: function() {
+      return this.catsList[this.currentCat];
+    },
+
+    setCurrentCat: function(index) {
+      this.currentCat = index;
+    }
+  };
+
+  octupus.init();
 }
