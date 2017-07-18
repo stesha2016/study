@@ -43,11 +43,60 @@ window.onload = function() {
     }
   };
 
+  var adminView = {
+    init: function() {
+      this.admin = document.getElementById('admin');
+      this.adminContainer = document.getElementById('admin-container');
+      this.catName = document.getElementById('input-cat-name');
+      this.catUrl = document.getElementById('input-cat-url');
+      this.clickNum = document.getElementById('input-click-number');
+      this.cancel = document.getElementById('cancel');
+      this.save = document.getElementById('save');
+
+      this.admin.addEventListener('click', function() {
+        octupus.showAdmin();
+      });
+
+      this.save.addEventListener('click', function() {
+        octupus.hideAdmin();
+        var cat = {};
+        octupus.saveCatInfo();
+      });
+
+      this.cancel.addEventListener('click', function() {
+        octupus.hideAdmin();
+      })
+    },
+
+    renderAdmin: function(isShow) {
+      if (isShow) {
+        this.adminContainer.classList.remove('hidden');
+      } else {
+        this.adminContainer.classList.add('hidden');
+      }
+    },
+
+    renderInput: function(catInfo) {
+      this.catName.value = catInfo.catName;
+      this.catUrl.value = catInfo.catImg;
+      this.clickNum.value = catInfo.catClickNumber;
+    },
+
+    getInputInfo: function() {
+      var cat = {};
+      cat.catName = this.catName.value;
+      cat.catImg = this.catUrl.value;
+      cat.catClickNumber = this.clickNum.value;
+      return cat;
+    }
+  };
+
   var octupus = {
     init: function() {
       data.init();
       catView.init();
       buttonView.init();
+      adminView.init();
     },
 
     renderAll: function() {
@@ -72,12 +121,31 @@ window.onload = function() {
 
     getAllCats: function() {
       return data.catsList;
+    },
+
+    showAdmin: function() {
+      if (data.getCurrentCat() === null) {
+        return;
+      }
+      data.adminShow = true;
+      adminView.renderAdmin(true);
+      adminView.renderInput(data.getCurrentCat());
+    },
+
+    hideAdmin: function() {
+      adminView.renderAdmin(false);
+    },
+
+    saveCatInfo: function() {
+      data.saveCatInfo(adminView.getInputInfo());
+      octupus.renderAll();
     }
   };
 
   var data = {
     catsList: [],
-    currentCat: 0,
+    currentCat: -1,
+    adminShow: false,
 
     init: function() {
       for (var i = 0; i < CAT_NUMBER; i++) {
@@ -91,11 +159,21 @@ window.onload = function() {
     },
 
     getCurrentCat: function() {
+      if (this.currentCat === -1) {
+        alert('please select a cat!');
+        return null;
+      }
       return this.catsList[this.currentCat];
     },
 
     setCurrentCat: function(index) {
       this.currentCat = index;
+    },
+
+    saveCatInfo: function(cat) {
+      this.catsList[this.currentCat].catName = cat.catName;
+      this.catsList[this.currentCat].catImg = cat.catImg;
+      this.catsList[this.currentCat].catClickNumber = cat.catClickNumber;
     }
   };
 
