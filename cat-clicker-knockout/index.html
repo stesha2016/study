@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Cat Clicker</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <h1 data-bind="text: currentCat().catName">
+  </h1>
+  <div data-bind="text: currentCat().clickNum">
+  </div>
+  <img data-bind="click: incrementClick, attr: {src: currentCat().catSrc}" alt="cute cat">
+  </img>
+  <ul data-bind="foreach: currentCat().nickNames">
+    <li data-bind="text: $data.nickName"></li>
+  </ul>
+  <script type="text/javascript" src="lib/knockout-3.4.2.js"></script>
+  <script type="text/javascript" src="js/app.js"></script>
+</body>
+
+</html>
