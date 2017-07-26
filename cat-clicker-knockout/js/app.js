@@ -12,7 +12,7 @@ var ViewModel = function() {
   this.currentCat = ko.observable(new Cat());
 
   this.incrementClick = function() {
-    this.currentCat().clickNum(this.currentCat().clickNum() + 1);
+    this.clickNum(this.clickNum() + 1);
   };
 };
 
